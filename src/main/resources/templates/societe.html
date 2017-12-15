@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+      layout:decorator="template1">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Visa</title>
+    <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css"
+          th:href="@{css/bootstrap.min.css}"/>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="col-md-6">
+        <div class="panel panel-primary">
+            <div class="panel-heading">Recherche d'une societe</div>
+            <div class="panel-body">
+                <form th:action="@{/consulterSociete}" method="get">
+                    <div>
+                        <label>Nom societe:</label>
+                        <input type="text" name="nom" th:value="${nom}"/>
+                        <button type="submit" class="btn btn-primary">OK</button>
+                    </div>
+                </form>
+                <div class="text-danger" th:if="${exception}" th:text="${exception.message}"></div>
+            </div>
+        </div>
+    </div>
+    <div class="spacer col-md-6 col-xs-12" sec:authorize="hasRole('ROLE_ADMIN')">
+        <div class="panel panel-primary">
+            <div class="panel-heading">Nouvelle societe</div>
+            <div class="panel-body">
+                <form th:action="@{/saveSociete}" method="post">
+                    <div class="form-group">
+                        <label class="control-label">Code de la societe</label>
+                        <input class="form-control" type="text" name="code"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Nom</label>
+                        <input class="form-control" type="text" name="nom"/>
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-10 col-md-offset-1">
+        <div class="panel panel-primary">
+            <div class="panel-heading">liste des societes</div>
+            <div class="panel-body">
+                <table class="table table-striped">
+                    <tr>
+                        <th>Code</th>
+                        <th>Nom</th>
+                    </tr>
+                    <tr th:each="s:${societePage}">
+                        <td th:text="${s.code}"></td>
+                        <td th:text="${s.nom}"></td>
+
+                    </tr>
+                </table>
+            </div>
+            <div>
+                <ul class="nav nav-pills">
+                    <li th:each="p,status:${pages}">
+                        <a th:href="@{/consulterSociete(nom=${nom},page=${status.index})}"
+                           th:text="${status.index+1}"></a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+      layout:decorator="template1">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Visa</title>
+    <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css"
+          th:href="@{css/bootstrap.min.css}"/>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="col-md-6">
+        <div class="panel panel-primary">
+            <div class="panel-heading">Recherche d'une societe</div>
+            <div class="panel-body">
+                <form th:action="@{/consulterOrdres}" method="get">
+                    <div>
+                        <label>Code societe:</label>
+                        <input type="text" name="code" th:value="${code}"/>
+                        <button type="submit" class="btn btn-primary">OK</button>
+                    </div>
+                </form>
+                <div class="text-danger" th:if="${exception}" th:text="${exception.message}"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6" th:if="${societe!=null}">
+        <div class="panel panel-primary" sec:authorize="hasRole('ROLE_ADMIN')">
+            <div class="panel-heading">Ordre pour la societe</div>
+            <div class="panel-body">
+                <form th:action="@{/saveOrdre}" method="post">
+                    <div>
+                        <label>Societe</label>
+                        <input type="hidden" name="code" th:value="${code}"/>
+                        <label th:text="${code}"></label>
+                    </div>
+                    <div>
+                        <label>Nombre d'Actions: </label>
+                        <input type="number" name="NombreActions"/>
+                    </div>
+                    <div>
+                        <label>Prix: </label>
+                        <input type="text" name="prix"/>
+                    </div>
+                    <div>
+                        <input type="radio" name="type_ordre" th:value="vente"
+                               checked="checked"/>
+                        <label>Vente</label>
+                        <input type="radio" name="type_ordre" th:value="achat"/>
+                        <label>Achat</label>
+                    </div>
+                    <div class="text-danger" th:text="${#httpServletRequest.getParameter('error')}"></div>
+                    <div>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">liste des ordres</div>
+        <div class="panel-body">
+            <table class="table table-striped">
+                <tr>
+                    <th>Identifiant</th>
+                    <th>Type</th>
+                    <th>Date</th>
+                    <th>NombreActions</th>
+                    <th>prix</th>
+                </tr>
+                <tr th:each="o:${ordrePage}">
+                    <td th:text="${o.identifiant}"></td>
+                    <td th:text="${o.class.simpleName}"></td>
+                    <td th:text="${o.date}"></td>
+                    <td th:text="${o.NombreActions}"></td>
+                    <td th:text="${o.prix}"></td>
+                </tr>
+            </table>
+            <div>
+                <ul class="nav nav-pills">
+                    <li th:each="p,status:${pages}">
+                        <a th:href="@{/consulterOrdres(code=${code},page=${status.index})}"
+                           th:text="${status.index+1}"></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
